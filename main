@@ -1,0 +1,36 @@
+import time
+from functools import partial
+import keyboard
+import test2
+import test1
+
+
+class MainController:
+    def __init__(self):
+        self.attack = test1.Attackmanager()
+        self.VIP = test2.VIPmanager()
+
+
+    def startAttack(self):
+        #self.attack.startAndStop()
+        self.VIP.startAttack()
+
+    def startVIP(self):
+        self.VIP.startAndStop()
+
+
+run = MainController()
+
+def startAttack():
+    run.startAttack()
+
+def startVIP():
+    run.startVIP()
+
+
+# Klavye dinleyicileri ekleniyor
+keyboard.on_press_key("ctrl", partial(lambda e, func: func(), func=run.startAttack))
+keyboard.on_press_key("shift", lambda e: startVIP())  # Shift tuşuna basıldığında VIP başlat
+
+# Programın çalışmasını devam ettirmek için sonsuz döngü
+keyboard.wait()  # Program herhangi bir tuş basılana kadar bekler
