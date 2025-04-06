@@ -1,0 +1,42 @@
+import threading
+import time
+
+class Attackmanager:
+    def __init__(self):
+        print('Attack manager başlatıldı')
+        self.is_running = False
+        self.thread = None
+        self.stop_event = threading.Event()  # Thread'in durması için event
+        self.thread_lock = threading.Lock()  # Thread'lerin senkronize olmasını sağlamak için lock
+
+    def DeathController(self):
+        print('Death kontrolü çalışıyor')
+        time.sleep(0.5)
+
+    def running(self):
+        print('Attack başladı')
+        while self.is_running:
+            print('Attack işlemi devam ediyor...')
+            time.sleep(0.5)
+
+    def startAndStop(self):
+        # Eğer thread zaten çalışıyorsa, mevcut thread'i durdurma
+        with self.thread_lock:  # Threadin tek bir anda çalışması sağlanır
+            if self.is_running:
+                print('Attack durduruluyor...')
+                self.stop_event.set()  # Durma sinyali gönder
+                self.is_running = False
+                if self.thread:
+                    self.thread.join()  # Threadin bitmesini bekleriz
+                print('Attack durduruldu')
+            else:
+                print('Attack başlatılıyor...')
+                self.is_running = True
+                self.stop_event.clear()  # Durum sıfırlanıyor
+                self.thread = threading.Thread(target=self.running, daemon=True)
+                self.thread.start()
+                print('Attack başlatıldı')
+
+    def stop(self):
+        # Thread'i durdurma işlemi
+        self.stop_event.set()
